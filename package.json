@@ -3,7 +3,7 @@
 	"displayName": "Code.Gamelet Utils",
 	"description": "auto import",
 	"publisher": "codegamelet",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/haskasu/code-gamelet-vscode"
@@ -33,7 +33,8 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"publish": "vsce publish"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.58.0",

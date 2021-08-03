@@ -14,7 +14,7 @@ export class CGAutoImports implements vscode.CodeActionProvider {
 
     refresh(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            vscode.workspace.findFiles('typings/*_modules.d.ts', null, 1000)
+            vscode.workspace.findFiles('typings/*_modules.cg_*.d.ts', null, 1000)
                 .then(uris =>
                     Promise.all(
                         uris.filter(uri =>
