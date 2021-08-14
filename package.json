@@ -3,7 +3,8 @@
 	"displayName": "Code.Gamelet Utils",
 	"description": "auto import",
 	"publisher": "codegamelet",
-	"version": "0.1.0",
+	"icon": "images/logo_v1_100.png",
+	"version": "0.1.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/haskasu/code-gamelet-vscode"
