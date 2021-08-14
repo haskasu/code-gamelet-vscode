@@ -1,0 +1,29 @@
+import CgCheck = CG.CgEventsEngine.CgCheck;
+
+/**
+ * [en] Description of this check in english.
+ * 
+ * @title [en] {{type}}
+ * @title [zh] {{type}}
+ * @path [en] path/to
+ * @path [zh] 目錄/路徑
+ */
+export class {{type}}Check extends CgCheck {
+
+    static TYPE = '{{type}}';
+
+    /**
+     * [en] Description of this parameter in english.
+     * 
+     * @label [en] value
+     * @format string
+     */
+    public get value(): string {
+        return this.getString(this.json.value);
+    }
+
+    public checkPass(): boolean {
+        // do the check, and return true to trigger its parent event
+        return false;
+    }
+}

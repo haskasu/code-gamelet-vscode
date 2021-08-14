@@ -1,9 +1,9 @@
 {
-  "name": "code-gamelet",
+	"name": "code-gamelet",
 	"displayName": "Code.Gamelet Utils",
 	"description": "auto import",
 	"publisher": "codegamelet",
-	"version": "0.0.6",
+	"version": "0.1.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/haskasu/code-gamelet-vscode"
@@ -15,7 +15,7 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:code-gamelet.helloWorld",
+		"onCommand:code-gamelet.helloWorld",
 		"onLanguage:typescript"
 	],
 	"main": "./out/extension.js",
@@ -37,16 +37,20 @@
 		"publish": "vsce publish"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.58.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.2.2",
 		"@types/node": "14.x",
-		"eslint": "^7.27.0",
+		"@types/twig": "^1.12.6",
+		"@types/vscode": "^1.58.0",
 		"@typescript-eslint/eslint-plugin": "^4.26.0",
 		"@typescript-eslint/parser": "^4.26.0",
+		"eslint": "^7.27.0",
 		"glob": "^7.1.7",
 		"mocha": "^8.4.0",
 		"typescript": "^4.3.2",
 		"vscode-test": "^1.5.2"
+	},
+	"dependencies": {
+		"twig": "^1.15.4"
 	}
 }

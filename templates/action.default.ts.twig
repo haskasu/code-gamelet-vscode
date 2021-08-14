@@ -1,0 +1,34 @@
+import CgAction = CG.CgEventsEngine.CgAction;
+
+/**
+ * [en] Description of this action in english.
+ * 
+ * @title [en] {{type}}
+ * @title [zh] {{type}}
+ * @path [en] path/to
+ * @path [zh] 目錄/路徑
+ */
+export class {{type}}Action extends CgAction {
+
+    static TYPE = '{{type}}';
+
+    /**
+     * [en] Description of this parameter in english.
+     * 
+     * @label [en] value
+     * @format string
+     */
+    public get value(): string {
+        return this.getString(this.json.value);
+    }
+
+    public prepare(): Promise<any> | any {
+        // prepare the data for execution
+        return Promise.resolve(0);
+    }
+
+    public execute(data: any): Promise<void> | void {
+        // execute the action with the data from prepare()
+        return Promise.resolve();
+    }
+}

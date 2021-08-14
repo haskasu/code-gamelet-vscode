@@ -1,0 +1,32 @@
+import CgTrigger = CG.CgEventsEngine.CgTrigger;
+
+/**
+ * [en] Description of this trigger in english.
+ * 
+ * @title [en] {{type}}
+ * @title [zh] {{type}}
+ * @path [en] path/to
+ * @path [zh] 目錄/路徑
+ */
+export class {{type}}Trigger extends CgTrigger {
+
+    static TYPE = '{{type}}';
+
+    protected setupListeners(): void {
+        // setup listeners, and call this.trigger() when the time comes.
+    }
+
+    protected removeListeners(): void {
+        // remove listeners. This is called when dispose() is called
+    }
+
+    /**
+     * [en] Description of this parameter in english.
+     * 
+     * @label [en] value
+     * @format string
+     */
+    public get value(): string {
+        return this.getString(this.json.value);
+    }
+}

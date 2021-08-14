@@ -2,12 +2,15 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { CGAutoImports } from './autoimports/CGautoImports';
+import { TemplateManager } from './templates/TemplateManager';
 
 let cgAutoImports: CGAutoImports = new CGAutoImports();
+let templateManager = new TemplateManager();
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	templateManager.context = context;
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -71,6 +74,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// disposable = vscode.languages.onDidChangeDiagnostics(cgAutoImports.onDidChangeDiagnostics, cgAutoImports);
 	// context.subscriptions.push(disposable);
+
+	disposable = vscode.workspace.onDidCreateFiles((event) => {
+		event.files.forEach(file => templateManager.onFileCreated(file));
+	});
+	context.subscriptions.push(disposable);
 
 }
 
