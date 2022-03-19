@@ -62,6 +62,7 @@ export class CGAutoImports implements vscode.CodeActionProvider {
             label: label,
             detail: '(' + suggest.type + ') ' + detailName,
         }, suggest.toCompletionItemKind());
+        item.sortText = '_' + label;
         item.insertText = insertText;
         item.documentation = doc;
 

@@ -27,51 +27,53 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
-	disposable = vscode.languages.registerCompletionItemProvider(
-		{
-			scheme: 'file',
-			language: 'typescript',
-		},
-		{
-			provideCompletionItems: (document: vscode.TextDocument, position: vscode.Position) => {
+	let completionProvider = {
+		provideCompletionItems: (document: vscode.TextDocument, position: vscode.Position) => {
 
-				// get all text until the `position` and check if it reads `console.`
-				// and if so then complete if `log`, `warn`, and `error`
-				let range = document.getWordRangeAtPosition(position);
-				let word = document.getText(range);
-				let prevChar = document.lineAt(position.line).text.substr(range.start.character - 1, 1);
-				if (prevChar !== '.') {
-					return cgAutoImports.refresh()
-						.then(() => cgAutoImports.createLibProposals(document, word));
-				}
-				return undefined;
-			},
-			resolveCompletionItem: (item: any) => {
-				cgAutoImports.onCompletionItem(item);
-				return null;
+			// get all text until the `position` and check if it reads `console.`
+			// and if so then complete if `log`, `warn`, and `error`
+			let range = document.getWordRangeAtPosition(position);
+			let word = document.getText(range);
+			let prevChar = document.lineAt(position.line).text.substr(range.start.character - 1, 1);
+			if (prevChar !== '.') {
+				return cgAutoImports.refresh()
+					.then(() => cgAutoImports.createLibProposals(document, word));
 			}
-		}
-	);
-
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.languages.registerCodeActionsProvider(
-		{
-			scheme: 'file',
-			language: 'typescript',
+			return undefined;
 		},
-		cgAutoImports,
-		{
-			providedCodeActionKinds: [
-				vscode.CodeActionKind.QuickFix,
-				vscode.CodeActionKind.Refactor,
-			],
-
+		resolveCompletionItem: (item: any) => {
+			cgAutoImports.onCompletionItem(item);
+			return null;
 		}
-	);
+	};
 
-	context.subscriptions.push(disposable);
+	for(let language of ['typescript', 'typescriptreact']) {
+		disposable = vscode.languages.registerCompletionItemProvider(
+			{
+				scheme: 'file',
+				language: language,
+			},
+			completionProvider
+		);
+		context.subscriptions.push(disposable);
 
+		disposable = vscode.languages.registerCodeActionsProvider(
+			{
+				scheme: 'file',
+				language: 'typescript',
+			},
+			cgAutoImports,
+			{
+				providedCodeActionKinds: [
+					vscode.CodeActionKind.QuickFix,
+					vscode.CodeActionKind.Refactor,
+				],
+	
+			}
+		);
+		context.subscriptions.push(disposable);
+	}
+	
 	// disposable = vscode.languages.onDidChangeDiagnostics(cgAutoImports.onDidChangeDiagnostics, cgAutoImports);
 	// context.subscriptions.push(disposable);
 

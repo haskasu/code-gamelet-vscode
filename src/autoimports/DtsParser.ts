@@ -1,4 +1,5 @@
 export class DtsInfo {
+    
     static TYPE = {
         CLASS: 'class',
         INTERFACE: 'interface',
@@ -128,25 +129,26 @@ export class DtsInfo {
                 this.declareNameWithSpan = declareName
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;')
+                    ;
                 break;
         }
 
         var index: number = 0;
         while (true) {
             index = this.declareNameWithSpan.indexOf(':', index);
-            if (index == -1) {
+            if (index === -1) {
                 break;
             }
             var end: number = this.declareNameWithSpan.indexOf(',', index);
-            if (end == -1) {
+            if (end === -1) {
                 end = this.declareNameWithSpan.indexOf(')', index);
             }
             var replacement: string = '<span class="paramType">' +
-                (end == -1 ? this.declareNameWithSpan.substr(index) : this.declareNameWithSpan.substr(index, end - index)) +
+                (end === -1 ? this.declareNameWithSpan.substr(index) : this.declareNameWithSpan.substr(index, end - index)) +
                 '</span>';
-            this.declareNameWithSpan = this.declareNameWithSpan.substr(0, index) + replacement + (end == -1 ? '' : this.declareNameWithSpan.substr(end));
+            this.declareNameWithSpan = this.declareNameWithSpan.substr(0, index) + replacement + (end === -1 ? '' : this.declareNameWithSpan.substr(end));
 
-            if (end == -1) {
+            if (end === -1) {
                 break;
             }
             index += replacement.length;
@@ -159,9 +161,9 @@ export class DtsInfo {
 
     public addSourceLine(line: string): void {
         this.declareSource += '    ' + line + '\n';
-        if (this.type == 'function' && !this.oneLineDeclare) {
+        if (this.type === 'function' && !this.oneLineDeclare) {
             let search = line.indexOf(';');
-            if (search != -1 && this.declareSource.split('(').length == this.declareSource.split(')').length) {
+            if (search !== -1 && this.declareSource.split('(').length === this.declareSource.split(')').length) {
                 let fullLine = this.declareSource.replace(/[\n\r\t]/g, '');
                 this.oneLineDeclare = true;
                 let startIndex: number = fullLine.indexOf('function ');
@@ -182,13 +184,13 @@ export class DtsInfo {
         if (!this.fileContentAlone) {
             let content: string = '';
             for (let info of this.declares) {
-                if (info.namespace == this.namespace && !info.fileContentAlone) {
+                if (info.namespace === this.namespace && !info.fileContentAlone) {
                     content += '\n' + info.preSourceWithLine + info.declareSource;
                 }
             }
             content = 'namespace ' + this.namespace + ' {\n\n' + content + '\n\n}';
             let position: number = content.indexOf(this.declareSource);
-            if (position != -1) {
+            if (position !== -1) {
                 this._lineNumber = content.substr(0, position).split('\n').length;
             }
             return content;
@@ -208,10 +210,10 @@ export class DtsInfo {
     }
 
     public get lineNumber(): number {
-        if (this._lineNumber == -1) {
+        if (this._lineNumber === -1) {
             // do this to calc lineNumber
             this.fileContent;
-            if (this._lineNumber == -1) {
+            if (this._lineNumber === -1) {
                 this._lineNumber = 0;
             }
         }
@@ -259,12 +261,12 @@ export class DtsParser {
             var line: string = lines[i];
             var trimedLine: string = line.trim();
 
-            if (trimedLine.indexOf('import {') == 0 || trimedLine.indexOf('private ') == 0) {
+            if (trimedLine.indexOf('import {') === 0 || trimedLine.indexOf('private ') === 0) {
                 continue;
             }
 
             start = line.indexOf(this.searchNamespace);
-            if (start != -1) {
+            if (start !== -1) {
                 start += this.searchNamespace.length;
                 end = line.indexOf(' ', start);
                 currentNamespace = line.substr(start, end - start);
@@ -275,13 +277,13 @@ export class DtsParser {
                         finishDeclare();
                     }
                     currentDeclare = _declare;
-                    if (currentDeclare.type == DtsInfo.TYPE.CONST) {
+                    if (currentDeclare.type === DtsInfo.TYPE.CONST) {
                         if (line.endsWith(';')) {
                             currentDeclare.addSourceLine(line);
                             finishDeclare();
                         }
                     }
-                } else if ((currentDeclare && currentDeclare.endLine == line) || (currentDeclare == null && line.trim() == '}')) {
+                } else if ((currentDeclare && currentDeclare.endLine === line) || (currentDeclare === null && line.trim() === '}')) {
                     if (currentDeclare) {
                         currentDeclare.addSourceLine(line);
                         finishDeclare();
@@ -291,7 +293,7 @@ export class DtsParser {
                     if (currentDeclare && currentDeclare.isOneLineDeclareType() && this.isCommentLine(trimedLine)) {
                         finishDeclare();
                     }
-                    if (currentDeclare == null) {
+                    if (!currentDeclare) {
                         preSource += '\n    ' + line;
                     }
                 }
@@ -323,61 +325,61 @@ export class DtsParser {
     private searchDeclare(namespace: string, line: string, declares: Array<DtsInfo>): DtsInfo {
         var lineStart: number, start: number, end: number;
         lineStart = start = line.indexOf(this.searchInterface);
-        if (start != -1) {
+        if (start !== -1) {
             start += this.searchInterface.length;
             end = line.lastIndexOf(this.searchExtends, start);
-            if (end == -1) {
+            if (end === -1) {
                 end = line.indexOf(this.searchExtendsEnd);
             }
             return new DtsInfo(namespace, line.substr(start, end - start), DtsInfo.TYPE.INTERFACE, line.substr(0, lineStart) + "}", declares, false);
         }
         lineStart = start = line.indexOf(this.searchClass);
-        if (start != -1) {
+        if (start !== -1) {
             start += this.searchClass.length;
             end = line.lastIndexOf(this.searchExtends, start);
-            if (end == -1) {
+            if (end === -1) {
                 end = line.indexOf(this.searchImplements);
             }
-            if (end == -1) {
+            if (end === -1) {
                 end = line.indexOf(this.searchExtendsEnd);
             }
             return new DtsInfo(namespace, line.substr(start, end - start), DtsInfo.TYPE.CLASS, line.substr(0, lineStart) + "}", declares, false);
         }
         lineStart = start = line.indexOf(this.searchConst);
-        if (start != -1) {
+        if (start !== -1) {
             let oneLine: boolean = true;
             start += this.searchConst.length;
             end = line.indexOf(this.searchTypeEnd);
-            if (end == -1) {
+            if (end === -1) {
                 end = line.indexOf(this.searchTypeEnd2);
                 oneLine = false;
             }
             return new DtsInfo(namespace, line.substr(start, end - start), DtsInfo.TYPE.CONST, line.substr(0, lineStart) + "};", declares, oneLine);
         }
         lineStart = start = line.indexOf(this.searchVar);
-        if (start != -1) {
+        if (start !== -1) {
             let oneLine: boolean = true;
             start += this.searchVar.length;
             end = line.indexOf(this.searchTypeEnd);
-            if (end == -1) {
+            if (end === -1) {
                 end = line.indexOf(this.searchTypeEnd2);
                 oneLine = false;
             }
             return new DtsInfo(namespace, line.substr(start, end - start), DtsInfo.TYPE.VAR, line.substr(0, lineStart) + "};", declares, oneLine);
         }
         lineStart = start = line.indexOf(this.searchFunction);
-        if (start != -1) {
+        if (start !== -1) {
             let oneLine: boolean = true;
             start += this.searchFunction.length;
             end = line.indexOf(this.searchTypeEnd);
-            if (end == -1) {
+            if (end === -1) {
                 end = line.length;
                 oneLine = false;
             }
             return new DtsInfo(namespace, line.substr(start, end - start), DtsInfo.TYPE.FUNCTION, line.substr(0, lineStart) + "}", declares, oneLine);
         }
         lineStart = start = line.indexOf(this.searchEnum);
-        if (start != -1) {
+        if (start !== -1) {
             start += this.searchEnum.length;
             end = line.indexOf(this.searchExtendsEnd);
             return new DtsInfo(namespace, line.substr(start, end - start), DtsInfo.TYPE.ENUM, line.substr(0, lineStart) + "}", declares, false);
@@ -386,7 +388,9 @@ export class DtsParser {
     }
 
     private sortFunc(a: DtsInfo, b: DtsInfo): number {
-        if (a.id == b.id) return 0;
+        if (a.id === b.id) {
+            return 0;
+        }
         return a.id > b.id ? 1 : -1;
     }
 }
