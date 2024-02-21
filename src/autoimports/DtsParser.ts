@@ -6,7 +6,8 @@ export class DtsInfo {
         FUNCTION: 'function',
         CONST: 'const',
         VAR: 'var',
-        ENUM: 'enum'
+        ENUM: 'enum',
+        REXPORT: 'rexport',
     };
 
     public id: string = '';
@@ -312,10 +313,68 @@ export class DtsParser {
         if (currentDeclare) {
             declares.push(currentDeclare);
         }
+        this.parseRexports(dts, declares);
 
         declares.sort(this.sortFunc);
 
         return declares;
+    }
+
+    private parseRexports(dts: string, declares: DtsInfo[]) {
+        let namespaces: { index: number, value: string }[] = [];
+        let search = dts.matchAll(/namespace\s+([\w\.]+)\s+{/g);
+        if (search) {
+            for (let nsresult of search) {
+                namespaces.push({
+                    index: nsresult.index,
+                    value: nsresult[1],
+                });
+            }
+            namespaces.sort((a, b) => a.index - b.index);
+        }
+        function getNamespaceByIndex(index: number): string {
+            let find = namespaces.find(ns => ns.index < index);
+            return find && find.value;
+        }
+
+        let reexpostList = dts.matchAll(/export\s+{([\s\S]+?)}/g);
+        if (reexpostList) {
+            for (let reexport of reexpostList) {
+                let namespace = getNamespaceByIndex(reexport.index);
+                if (namespace) {
+                    let exports = reexport[1].split(',');
+                    let expDeclares: DtsInfo[] = [];
+                    for (let exportStr of exports) {
+                        exportStr = exportStr.trim();
+                        let search = exportStr.match(/^([\w_]+)(\s+as\s+([\w_]+))?$/);
+                        if (search) {
+                            let sourceName = search[1];
+                            let declareName = search[3] || sourceName;
+                            let info = new DtsInfo(namespace, declareName, DtsInfo.TYPE.REXPORT, '', declares, true);
+                            info.finish(exportStr);
+                            declares.push(info);
+                            expDeclares.push(info);
+                        }
+                    }
+
+                    if(expDeclares.length === 1) {
+                        let first = expDeclares[0];
+                        first.declareSource = '    export { ' + first.preSource + ' }';
+                        first.preSource = '';
+                    } else if (expDeclares.length) {
+                        expDeclares.forEach((info, index) => {
+                            info.id = 'zzz' + index + '_' + info.id;
+                            info.declareSource = '        ' + info.preSource + ',';
+                            info.preSource = '';
+                        });
+                        let first = expDeclares[0];
+                        first.declareSource = '    export {\n' + first.declareSource;
+                        let last = expDeclares[expDeclares.length - 1];
+                        last.declareSource += '\n    }';
+                    }
+                }
+            }
+        }
     }
 
     private isCommentLine(trimedLine: string): boolean {
