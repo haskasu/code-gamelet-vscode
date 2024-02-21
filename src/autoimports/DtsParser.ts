@@ -87,6 +87,7 @@ export class DtsInfo {
             case 'enum':
             case 'const':
             case 'var':
+            case 'rexport':
                 return this.shortName;
 
             case 'function':
@@ -330,7 +331,7 @@ export class DtsParser {
                     value: nsresult[1],
                 });
             }
-            namespaces.sort((a, b) => a.index - b.index);
+            namespaces.sort((a, b) => b.index - a.index);
         }
         function getNamespaceByIndex(index: number): string {
             let find = namespaces.find(ns => ns.index < index);
